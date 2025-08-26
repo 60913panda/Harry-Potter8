@@ -1,8 +1,13 @@
-name: Write to Google Doc
+name: Write Story to Google Doc
 
-# 這個 workflow 會在手動觸發時執行
+# 這個 workflow 會在透過 API 觸發時執行
 on:
   workflow_dispatch:
+    inputs:
+      story_content:
+        description: '從網頁傳來的完整故事內容'
+        required: true
+        type: string
 
 jobs:
   write-doc:
@@ -28,6 +33,8 @@ jobs:
       # 步驟 4: 執行 Python 腳本來寫入文件
       - name: Run script to write to Google Doc
         env:
-          # 將我們儲存的 GitHub Secret 傳遞給 Python 腳本
+          # 將 GitHub Secret 傳遞給 Python 腳本
           GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
+          # 將從網頁接收到的故事內容，傳遞給 Python 腳本
+          STORY_CONTENT: ${{ github.event.inputs.story_content }}
         run: python write_to_doc.py
